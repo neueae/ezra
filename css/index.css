@@ -1,14 +1,54 @@
-/* General header styling */
+/* ===========================
+   CSS Variables for Styling
+   =========================== */
+/* Define variables for easy customization */
+:root {
+    --primary-bg-color: #0500be; /* Background color for the body */
+    --primary-text-color: white; /* Text color */
+    --font-family: "JetBrains Mono", monospace; /* Font family */
+    --font-size-base: 16px; /* Base font size for scaling */
+    --line-height-base: 1.5; /* Base line height */
+    --header-padding: 10px; /* Padding inside header */
+    --content-max-width: 752px; /* Maximum width for content area */
+    --footer-font-size: 14px; /* Footer font size */
+    --image-max-width: 208px; /* Maximum width for header images */
+    --footer-image-max-height: 291px; /* Maximum height for footer images */
+}
 
+/* ===========================
+   General Styling
+   =========================== */
+body {
+    background-color: var(--primary-bg-color); /* Use variable for background color */
+    font-family: var(--font-family); /* Use variable for font family */
+    font-size: var(--font-size-base); /* Base font size */
+    line-height: var(--line-height-base); /* Base line height */
+    margin: 0; /* Remove default margin */
+    padding: 0; /* Remove default padding */
+}
+
+/* Center the entire body content */
+.content {
+    width: 100%; /* Makes it responsive */
+    max-width: var(--content-max-width); /* Set exact width using variable */
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px; /* Optional spacing inside the content area */
+}
+
+/* ===========================
+   Header Styling
+   =========================== */
+/* General header styling */
 .header {
     display: flex;
     justify-content: space-between;
     align-items: center; /* Center vertically */
-    padding: 10px;
+    padding: var(--header-padding); /* Use variable for padding */
     flex-wrap: wrap; /* Allows elements to wrap when needed */
+    font-family: times new roman;
 }
 
-/* Default styles */
+/* Default styles for header sections */
 .left, .middle, .right {
     flex: 1;
     text-align: center; /* Center text by default */
@@ -23,74 +63,59 @@
     text-align: right;
 }
 
-/* Mobile styles */
+/* Header image styling */
+.header img {
+    max-width: var(--image-max-width); /* Use variable for image max width */
+    height: auto; /* Maintain aspect ratio */
+}
+
+/* Text alignment in header (optional) */
+.header {
+    text-align: justify;
+}
+
+/* ===========================
+   Footer Styling
+   =========================== */
+/* Footer styling for centering and readability */
+.footer {
+    text-align: center;
+    font-size: var(--footer-font-size); /* Use variable for font size */
+}
+
+/* Footer image styling to ensure responsiveness */
+.footer img {
+    max-height: var(--footer-image-max-height); /* Use variable for max height of images in footer */
+}
+
+/* ===========================
+   Paragraph and Link Styling
+   =========================== */
+/* Paragraph styling for readability and spacing between lines/paragraphs */
+p {
+    color: var(--primary-text-color); /* Use variable for text color */
+    font-family: var(--font-family);
+    font-size: calc(var(--font-size-base) * 1); /* Scale base font size if needed (e.g., multiply by a factor) */
+    line-height: var(--line-height-base); /* Space between lines in the same paragraph using variable */
+    margin-bottom: 2em; /* Space between paragraphs */
+}
+
+/* Link styling to match text color and maintain consistency across the site */
+a {
+    color: var(--primary-text-color); /* Use variable for link color matching text color */
+}
+
+/* ===========================
+   Responsive Design
+   =========================== */
+/* Mobile styles for small screens (max-width of 320px)*/
 @media (max-width: 320px) {
     .header {
         flex-direction: column;
         align-items: center;
-    }
-
-    .middle {
-        order: -1; /* Move the middle content to the top */
-        width: 100%; /* Make it take full width */
-    }
-
-    .left, .right {
-        width: 50%; /* Keep them side by side */
-    }
-}
-
-body{
-    background-color: #0500be;
-}
-
-/* Center the entire body content */
-.content {
-    width: 100%; /* Makes it responsive */
-    max-width: 752px; /* Set exact width */
-    margin: 0 auto; /* Center horizontally */
-    padding: 10px; /* Optional: Adds spacing inside */
-}
-
-p{
-    color: white;
-  --font-family: "JetBrains Mono", monospace;
-  --line-height: 1.20rem;
-  --border-thickness: 2px;
-
-  --font-weight-normal: 500;
-  --font-weight-medium: 600;
-  --font-weight-bold: 800;
-
-  font-family: var(--font-family);
-  font-optical-sizing: auto;
-  font-weight: var(--font-weight-normal);
-  font-style: normal;
-  font-variant-numeric: tabular-nums lining-nums;
-  font-size: 12x;
-        line-height: 1.5;  /* Space between lines in the same paragraph */
-    margin-bottom: 2em; /* Space between paragraphs */
-}
-
-a{
-    color: white
-}
-
-.header img{
-    max-width: 208px;
-    height: auto
-}
-
-.header{
-    text-align: justify
-}
-
-.footer{
-    text-align: center;
-    font-size: 14px;
-}
-
-.footer img{
-    max-height: 291px
-}
-
+        text-align: center; /* Center everything on small screens */
+        padding-bottom: 20px; /* Add extra spacing on mobile screens if needed*/
+        gap :12 px;
+        
+        .middle{
+            flex_wrap
