@@ -129,6 +129,7 @@ a {
     }
       .content {
     padding-right: 14px; /* For mobile-sized screens */
+          padding-left: 14px;
   }
 }
     .middle{
