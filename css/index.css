@@ -44,7 +44,7 @@ img {
     max-width: var(--content-max-width); /* Set exact width using variable */
     margin: 0 auto; /* Center horizontally */
     padding: 10px; /* Optional spacing inside the content area */
-    display: flex
+    display: flex;
 }
 
 /* ===========================
