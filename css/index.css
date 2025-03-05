@@ -34,8 +34,6 @@ img {
 
 .content img {
     max-height: 120px;
-    justify-content: center;
-    max-width: 100%;
 }
 
 /* Center the entire body content */
