@@ -27,12 +27,24 @@ body {
     padding: 0; /* Remove default padding */
 }
 
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+.content img {
+    max-height: 120px;
+    justify-content: center;
+    max-width: 100%;
+}
+
 /* Center the entire body content */
 .content {
     width: 100%; /* Makes it responsive */
     max-width: var(--content-max-width); /* Set exact width using variable */
     margin: 0 auto; /* Center horizontally */
     padding: 10px; /* Optional spacing inside the content area */
+    display: flex
 }
 
 /* ===========================
@@ -86,6 +98,7 @@ body {
 /* Footer image styling to ensure responsiveness */
 .footer img {
     max-height: var(--footer-image-max-height); /* Use variable for max height of images in footer */
+    height: auto;
 }
 
 /* ===========================
@@ -108,6 +121,21 @@ a {
 /* ===========================
    Responsive Design
    =========================== */
+
+/* Mobile styles for small screens (max width of 414px (iP))*/
+@media (max-width: 414px) {
+    .header {
+        padding-bottom: 20px; /* Add extra spacing on mobile screens if needed*/
+        gap :12 px;
+        font-size: 18px;
+    }
+      .content {
+    padding-right: 14px; /* For mobile-sized screens */
+  }
+}
+    .middle{
+        flex-wrap: nowrap;
+    }
 /* Mobile styles for small screens (max-width of 320px)*/
 @media (max-width: 320px) {
     .header {
@@ -116,6 +144,12 @@ a {
         text-align: center; /* Center everything on small screens */
         padding-bottom: 20px; /* Add extra spacing on mobile screens if needed*/
         gap :12 px;
-        
-        .middle{
-            flex_wrap
+        font-size: 18px;
+    }
+      .content {
+    padding-right: 14px; /* For mobile-sized screens */
+  }
+}
+    .middle{
+        flex-wrap: nowrap;
+    }
