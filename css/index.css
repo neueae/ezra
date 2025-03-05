@@ -118,16 +118,16 @@ a {
 
 .footer {
     position: relative; /* Allows absolute positioning inside */
-    padding: 100px 20px; /* Adjust padding manually */
+    padding: 77px 20px; /* Adjust padding manually */
     text-align: center; /* Centers the text */
 }
 
 .footer-image {
     position: absolute;
-    top: 0%;
+    top: -22%;
     left: 50%;
     transform: translate(-50%, -50%); /* Center the image */
-    width: 300px; /* Adjust as needed */
+    width: 363px; /* Adjust as needed */
     opacity: 0.; /* Make it semi-transparent */
     z-index: -1; /* Push it behind the text */
 }
