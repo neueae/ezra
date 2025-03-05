@@ -1,0 +1,96 @@
+/* General header styling */
+
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center; /* Center vertically */
+    padding: 10px;
+    flex-wrap: wrap; /* Allows elements to wrap when needed */
+}
+
+/* Default styles */
+.left, .middle, .right {
+    flex: 1;
+    text-align: center; /* Center text by default */
+}
+
+/* Align left and right properly */
+.left {
+    text-align: left;
+}
+
+.right {
+    text-align: right;
+}
+
+/* Mobile styles */
+@media (max-width: 320px) {
+    .header {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .middle {
+        order: -1; /* Move the middle content to the top */
+        width: 100%; /* Make it take full width */
+    }
+
+    .left, .right {
+        width: 50%; /* Keep them side by side */
+    }
+}
+
+body{
+    background-color: #0500be;
+}
+
+/* Center the entire body content */
+.content {
+    width: 100%; /* Makes it responsive */
+    max-width: 752px; /* Set exact width */
+    margin: 0 auto; /* Center horizontally */
+    padding: 10px; /* Optional: Adds spacing inside */
+}
+
+p{
+    color: white;
+  --font-family: "JetBrains Mono", monospace;
+  --line-height: 1.20rem;
+  --border-thickness: 2px;
+
+  --font-weight-normal: 500;
+  --font-weight-medium: 600;
+  --font-weight-bold: 800;
+
+  font-family: var(--font-family);
+  font-optical-sizing: auto;
+  font-weight: var(--font-weight-normal);
+  font-style: normal;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-size: 12x;
+        line-height: 1.5;  /* Space between lines in the same paragraph */
+    margin-bottom: 2em; /* Space between paragraphs */
+}
+
+a{
+    color: white
+}
+
+.header img{
+    max-width: 208px;
+    height: auto
+}
+
+.header{
+    text-align: justify
+}
+
+.footer{
+    text-align: center;
+    font-size: 14px;
+}
+
+.footer img{
+    max-height: 291px
+}
+
