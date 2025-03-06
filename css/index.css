@@ -137,22 +137,20 @@ a {
    =========================== */
 
 /* Mobile styles for small screens (max width of 414px (iP))*/
-@media (max-width: 414px) {
+@media (max-width: 600px) {
     .header {
         padding-bottom: 20px; /* Add extra spacing on mobile screens if needed*/
         gap :12 px;
         font-size: 18px;
     }
-      .content {
-    padding-right: 14px; /* For mobile-sized screens */
-          padding-left: 14px;
   }
+
+.content {
+    font-size: 18px;
 }
-    .middle{
-        flex-wrap: nowrap;
-    }
+
 /* Mobile styles for small screens (max-width of 320px)*/
-@media (max-width: 320px) {
+@media (max-width: 300px) {
     .header {
         flex-direction: column;
         align-items: center;
