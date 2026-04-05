@@ -1,0 +1,955 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Baby-Wunschliste</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;0,9..144,500;0,9..144,600;1,9..144,400&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg: #f5f0e8;
+    --bg-warm: #ede4d3;
+    --ink: #2a2520;
+    --ink-soft: #5c544a;
+    --ink-faded: #8a8075;
+    --accent: #b8562f;
+    --accent-soft: #d4a574;
+    --line: #d9cfc0;
+    --done-bg: #e8e0d0;
+    --shadow: 0 1px 3px rgba(42, 37, 32, 0.06), 0 8px 24px rgba(42, 37, 32, 0.04);
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', -apple-system, sans-serif;
+    font-weight: 400;
+    line-height: 1.6;
+    min-height: 100vh;
+    background-image:
+      radial-gradient(circle at 15% 10%, rgba(212, 165, 116, 0.12) 0%, transparent 40%),
+      radial-gradient(circle at 85% 80%, rgba(184, 86, 47, 0.08) 0%, transparent 50%);
+  }
+
+  .container {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 60px 32px 120px;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    padding: 40px 0 60px;
+    border-bottom: 1px solid var(--line);
+    margin-bottom: 48px;
+    position: relative;
+  }
+
+  .kicker {
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.24em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 20px;
+  }
+
+  h1 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: clamp(42px, 7vw, 72px);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+  }
+
+  h1 em {
+    font-style: italic;
+    font-weight: 300;
+    color: var(--accent);
+  }
+
+  .intro {
+    font-family: 'Fraunces', serif;
+    font-size: 19px;
+    font-weight: 300;
+    line-height: 1.6;
+    color: var(--ink-soft);
+    max-width: 560px;
+    margin: 0 auto;
+  }
+
+  /* Status bar */
+  .status-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 20px 24px;
+    background: rgba(255, 255, 255, 0.5);
+    border: 1px solid var(--line);
+    border-radius: 2px;
+    margin-bottom: 48px;
+    flex-wrap: wrap;
+  }
+
+  .status-text {
+    font-size: 13px;
+    color: var(--ink-soft);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--accent-soft);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  .status-dot.connected { background: #7a9a5e; }
+  .status-dot.error { background: #c94f3c; animation: none; }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  .progress-wrap {
+    flex: 1;
+    min-width: 200px;
+    max-width: 300px;
+  }
+
+  .progress-bar {
+    height: 4px;
+    background: var(--line);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.6s ease;
+  }
+
+  .progress-text {
+    font-size: 11px;
+    color: var(--ink-faded);
+    margin-top: 6px;
+    text-align: right;
+    letter-spacing: 0.04em;
+  }
+
+  .refresh-btn {
+    background: transparent;
+    border: 1px solid var(--line);
+    color: var(--ink-soft);
+    padding: 8px 16px;
+    font-family: 'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .refresh-btn:hover {
+    background: var(--ink);
+    color: var(--bg);
+    border-color: var(--ink);
+  }
+
+  .refresh-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  /* Sections */
+  .section {
+    margin-bottom: 56px;
+  }
+
+  .section-header {
+    display: flex;
+    align-items: baseline;
+    gap: 20px;
+    margin-bottom: 24px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .section-number {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--accent);
+    font-weight: 400;
+  }
+
+  h2 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 28px;
+    letter-spacing: -0.01em;
+    flex: 1;
+  }
+
+  .section-price {
+    font-family: 'Fraunces', serif;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--ink-faded);
+  }
+
+  /* Items */
+  .item {
+    display: flex;
+    align-items: flex-start;
+    gap: 20px;
+    padding: 18px 4px;
+    border-bottom: 1px solid rgba(217, 207, 192, 0.5);
+    transition: all 0.3s ease;
+    position: relative;
+  }
+
+  .item:hover {
+    background: rgba(255, 255, 255, 0.4);
+    margin: 0 -12px;
+    padding: 18px 16px;
+  }
+
+  .item-check {
+    flex-shrink: 0;
+    margin-top: 4px;
+  }
+
+  .checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 1.5px solid var(--ink-soft);
+    background: transparent;
+    cursor: pointer;
+    position: relative;
+    transition: all 0.2s;
+    border-radius: 2px;
+  }
+
+  .checkbox:hover {
+    border-color: var(--accent);
+    background: rgba(184, 86, 47, 0.05);
+  }
+
+  .checkbox:checked {
+    background: var(--accent);
+    border-color: var(--accent);
+  }
+
+  .checkbox:checked::after {
+    content: '';
+    position: absolute;
+    left: 6px;
+    top: 2px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+
+  .checkbox:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
+  .item-body {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .item-title {
+    font-family: 'Fraunces', serif;
+    font-size: 18px;
+    font-weight: 400;
+    color: var(--ink);
+    margin-bottom: 4px;
+    transition: all 0.3s;
+  }
+
+  .item-title a {
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 1px solid transparent;
+    transition: border 0.2s;
+  }
+
+  .item-title a:hover {
+    border-bottom-color: var(--accent);
+  }
+
+  .item-meta {
+    font-size: 13px;
+    color: var(--ink-faded);
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    align-items: center;
+  }
+
+  .item-price {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  .item-note {
+    font-style: italic;
+  }
+
+  .item.done .item-title {
+    color: var(--ink-faded);
+    text-decoration: line-through;
+    text-decoration-thickness: 1px;
+    text-decoration-color: var(--ink-faded);
+  }
+
+  .item.done {
+    background: var(--done-bg);
+    margin: 0 -12px;
+    padding: 18px 16px;
+    opacity: 0.75;
+  }
+
+  .item.done .claimed-by {
+    display: inline-block;
+    font-size: 11px;
+    color: var(--accent);
+    font-weight: 500;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-top: 6px;
+  }
+
+  .claimed-by {
+    display: none;
+  }
+
+  /* Modal */
+  .modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(42, 37, 32, 0.5);
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 20px;
+  }
+
+  .modal-backdrop.active {
+    display: flex;
+  }
+
+  .modal {
+    background: var(--bg);
+    padding: 40px;
+    max-width: 440px;
+    width: 100%;
+    border-radius: 4px;
+    box-shadow: var(--shadow);
+    border: 1px solid var(--line);
+  }
+
+  .modal h3 {
+    font-family: 'Fraunces', serif;
+    font-weight: 400;
+    font-size: 26px;
+    margin-bottom: 12px;
+    letter-spacing: -0.01em;
+  }
+
+  .modal p {
+    color: var(--ink-soft);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.6;
+  }
+
+  .modal input {
+    width: 100%;
+    padding: 14px 16px;
+    border: 1px solid var(--line);
+    background: white;
+    font-family: 'Inter', sans-serif;
+    font-size: 15px;
+    color: var(--ink);
+    border-radius: 2px;
+    margin-bottom: 20px;
+  }
+
+  .modal input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+  }
+
+  .btn {
+    padding: 12px 24px;
+    font-family: 'Inter', sans-serif;
+    font-size: 13px;
+    font-weight: 500;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    border-radius: 2px;
+    transition: all 0.2s;
+    border: 1px solid transparent;
+  }
+
+  .btn-primary {
+    background: var(--accent);
+    color: white;
+  }
+
+  .btn-primary:hover {
+    background: #9a4525;
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--ink-soft);
+    border-color: var(--line);
+  }
+
+  .btn-ghost:hover {
+    background: var(--bg-warm);
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 100px;
+    padding-top: 40px;
+    border-top: 1px solid var(--line);
+    text-align: center;
+    font-size: 12px;
+    color: var(--ink-faded);
+    line-height: 1.8;
+  }
+
+  footer em {
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    color: var(--ink-soft);
+  }
+
+  /* Toast */
+  .toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--ink);
+    color: var(--bg);
+    padding: 14px 24px;
+    border-radius: 2px;
+    font-size: 13px;
+    opacity: 0;
+    transition: all 0.3s;
+    z-index: 200;
+    max-width: 90vw;
+    text-align: center;
+  }
+
+  .toast.show {
+    transform: translateX(-50%) translateY(0);
+    opacity: 1;
+  }
+
+  /* Loading */
+  .loading {
+    text-align: center;
+    padding: 80px 20px;
+    color: var(--ink-faded);
+    font-family: 'Fraunces', serif;
+    font-style: italic;
+    font-size: 18px;
+  }
+
+  .setup-warning {
+    background: rgba(184, 86, 47, 0.08);
+    border: 1px solid rgba(184, 86, 47, 0.3);
+    padding: 20px 24px;
+    border-radius: 2px;
+    margin-bottom: 32px;
+    font-size: 13px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+
+  .setup-warning strong {
+    color: var(--accent);
+    font-weight: 600;
+  }
+
+  .setup-warning code {
+    background: rgba(42, 37, 32, 0.08);
+    padding: 2px 6px;
+    border-radius: 2px;
+    font-size: 12px;
+  }
+
+  @media (max-width: 640px) {
+    .container { padding: 32px 20px 80px; }
+    .modal { padding: 28px 24px; }
+    .section-header { flex-wrap: wrap; gap: 8px; }
+    h2 { font-size: 24px; }
+    .item:hover, .item.done { margin: 0; padding: 18px 4px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+
+  <header>
+    <div class="kicker">Wunschliste · Frühling 2026</div>
+    <h1>Unser kleines<br><em>großes Abenteuer</em></h1>
+    <p class="intro">
+      Vielen Dank, dass ihr uns ein Stück weit begleiten möchtet. Hier findet ihr alles, was wir noch brauchen — setzt einfach einen Haken bei dem, was ihr besorgen wollt, damit nichts doppelt kommt.
+    </p>
+  </header>
+
+  <div id="setup-warning" class="setup-warning" style="display:none;">
+    <strong>⚙ Einmalige Einrichtung nötig</strong><br>
+    Damit die Haken zwischen allen Besuchern synchronisiert werden, musst du einmalig einen kostenlosen <code>jsonbin.io</code>-Account anlegen und die <code>BIN_ID</code> und den <code>API_KEY</code> im Quelltext eintragen. Eine Anleitung findest du in der <code>README.md</code>. Solange läuft die Seite im Offline-Modus (Haken werden nur lokal gespeichert).
+  </div>
+
+  <div class="status-bar">
+    <div class="status-text">
+      <span class="status-dot" id="status-dot"></span>
+      <span id="status-label">Verbinde…</span>
+    </div>
+    <div class="progress-wrap">
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill"></div>
+      </div>
+      <div class="progress-text" id="progress-text">0 / 0 besorgt</div>
+    </div>
+    <button class="refresh-btn" id="refresh-btn" onclick="loadState()">↻ Aktualisieren</button>
+  </div>
+
+  <div id="list-container">
+    <div class="loading">Liste wird geladen…</div>
+  </div>
+
+  <footer>
+    Mit viel Liebe und etwas Aufregung zusammengestellt.<br>
+    <em>Wir freuen uns auf euch.</em>
+  </footer>
+
+</div>
+
+<!-- Modal -->
+<div class="modal-backdrop" id="modal">
+  <div class="modal">
+    <h3>Wer bist du?</h3>
+    <p id="modal-text">Damit wir wissen, wer was besorgt, trag kurz deinen Namen ein. Er wird nur neben dem Geschenk angezeigt.</p>
+    <input type="text" id="name-input" placeholder="Dein Name" maxlength="40" autocomplete="name">
+    <div class="modal-actions">
+      <button class="btn btn-ghost" onclick="closeModal()">Abbrechen</button>
+      <button class="btn btn-primary" onclick="confirmClaim()">Bestätigen</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+// ============================================================
+// KONFIGURATION — Hier deine jsonbin.io Daten eintragen:
+// ============================================================
+const CONFIG = {
+  BIN_ID: '69d23a9336566621a87ed39f',        // z.B. '65a1f2b3c4d5e6f7890abcde'
+  API_KEY: '$2a$10$a88AD2gKRlNY2MDfiYCWR.kKHXgLt.GLWLvNEg.cZ9ZhFLJe568i.',       // z.B. '$2a$10$xxx...'
+};
+// ============================================================
+
+// Die komplette Wunschliste
+const WISHLIST = [
+  {
+    title: 'Kliniktasche',
+    price: '30–50 €',
+    items: [
+      { id: 'k1', name: 'Rotes Duschhandtuch für Baby', price: '10–15 €' },
+      { id: 'k2', name: 'Badezusatz', price: '5–10 €' },
+      { id: 'k3', name: 'Duftöl', price: '8–15 €' },
+      { id: 'k4', name: 'Still-BH', price: '30–50 €', note: '2 Stück' },
+      { id: 'k5', name: 'Stilleinlagen', price: '8–15 €' },
+    ]
+  },
+  {
+    title: 'Wickeln & Hygiene',
+    price: '70–110 €',
+    items: [
+      { id: 'w1', name: 'Wickelauflage', price: '15–30 €' },
+      { id: 'w2', name: 'Wickelunterlage (abwaschbar)', price: '10–20 €' },
+      { id: 'w3', name: 'Windeln Newborn', price: '40–60 €', note: 'Lillydoo, 2–3 Pakete', url: 'https://lillydoo.com/' },
+      { id: 'w4', name: 'Feuchttücher oder Waschlappen', price: '5–10 €' },
+      { id: 'w5', name: 'Spucktücher', price: '15–25 €', note: 'mind. 10 Stück Mull' },
+      { id: 'w6', name: 'Wattepads', price: '3–5 €', note: '2–3 Packungen' },
+    ]
+  },
+  {
+    title: 'Kleidung — Wolle & Seide',
+    price: '280–420 €',
+    items: [
+      { id: 'c1', name: 'Wickelbody Wolle-Seide Gr. 50', price: '25–35 €', note: '2–3× — Cosilana / Engel' },
+      { id: 'c2', name: 'Wickelbody Wolle-Seide Gr. 56', price: '25–35 €', note: '2–3× — Cosilana / Engel' },
+      { id: 'c3', name: 'Pyjama Wolle-Seide Gr. 50', price: '30–40 €', note: '2×' },
+      { id: 'c4', name: 'Pyjama Wolle-Seide Gr. 56', price: '30–40 €', note: '2×' },
+      { id: 'c5', name: 'Baby-Jäckchen „Schlüttli" Gr. 56', price: '20–30 €', note: '2×' },
+      { id: 'c6', name: 'Strickjacke Wolle/Kaschmir Gr. 62', price: '40–80 €', note: 'für draußen' },
+      { id: 'c7', name: 'Baby-Leggings mitwachsend', price: '25–40 €', note: '2× — Mamelo oder Lil Leo', url: 'https://www.mamelo.de/collections/leggings' },
+      { id: 'c8', name: 'Erstlingshaube', price: '10–15 €' },
+      { id: 'c9', name: 'Mütze Gr. 15–16', price: '10–15 €' },
+      { id: 'c10', name: 'Socken Gr. 15–16', price: '8–12 €', note: '2 Paar' },
+    ]
+  },
+  {
+    title: 'Schlafen',
+    price: '90–150 €',
+    items: [
+      { id: 's1', name: 'Schlafsack Wolle/Wolle-Seide 56/68', price: '60–90 €', note: 'Engel / Lilano / Disana' },
+      { id: 's2', name: 'Wolldecke / Babydecke', price: '30–50 €' },
+      { id: 's3', name: 'Traubenkernkissen Baby', price: '15–25 €' },
+    ]
+  },
+  {
+    title: 'Medizinschrank & Pflege',
+    price: '80–120 €',
+    items: [
+      { id: 'm1', name: 'Fieberthermometer digital', price: '10–20 €', note: 'rektal ist am genauesten' },
+      { id: 'm2', name: 'Babynagelpfeile / Nagelschere', price: '5–10 €' },
+      { id: 'm3', name: 'Nasensauger', price: '15–30 €' },
+      { id: 'm4', name: 'Wundschutzcreme', price: '8–12 €', note: 'Weleda Calendula oder Bepanthen' },
+      { id: 'm5', name: 'Windelbalsam', price: '8–12 €' },
+      { id: 'm6', name: 'Baby Vitamin-D-Tropfen', price: '5–8 €' },
+      { id: 'm7', name: 'Mandelöl', price: '8–12 €' },
+      { id: 'm8', name: 'Rose-Teebaum-Hydrolat', price: '10–15 €' },
+      { id: 'm9', name: 'Mama Flor', price: '25–35 €', url: 'https://shop.into-life.de/Bio-Nahrungsergaenzungsmittel-Mama-Flor/53051007' },
+      { id: 'm10', name: 'Baby Flor (ggf.)', price: '25–35 €', url: 'https://shop.into-life.de/Bio-Nahrungsergaenzungsmittel-Baby-Flor/53051002' },
+    ]
+  },
+  {
+    title: 'Wochenbett',
+    price: '150–250 €',
+    items: [
+      { id: 'wb1', name: 'Wochenbetteinlagen', price: '15–25 €' },
+      { id: 'wb2', name: 'Podusche', price: '15–25 €' },
+      { id: 'wb3', name: 'Multikompressen / Brustsalbe', price: '15–25 €' },
+      { id: 'wb4', name: 'Stilleinlagen (waschbar + Einweg)', price: '20–30 €' },
+      { id: 'wb5', name: 'Ooia Periodenunterwäsche', price: '80–120 €', note: '2–3 Stück' },
+      { id: 'wb6', name: 'Stillhütchen', price: '10–15 €' },
+      { id: 'wb7', name: 'Ikea Råskog Servierwagen', price: '40–60 €', url: 'https://www.ikea.com/de/de/p/raskog-norrava-servierwagen-mit-abdeckung-graublau-s49580757/' },
+    ]
+  },
+  {
+    title: 'Sonstiges & Zubehör',
+    price: '100–180 €',
+    items: [
+      { id: 'x1', name: 'Abhaltetöpfchen', price: '15–25 €', url: 'https://kindsgut.de/ratgeber/toepfchentraining/abhaltetoepfchen' },
+      { id: 'x2', name: 'Hachiman Eimer 20 L', price: '25–40 €' },
+      { id: 'x3', name: 'Wasserschale', price: '10–20 €' },
+      { id: 'x4', name: 'Fläschchen + Sauger', price: '20–35 €', note: '2–3 Stück' },
+      { id: 'x5', name: 'Weißes-Rauschen-Gerät', price: '25–50 €', note: 'optional' },
+    ]
+  },
+];
+
+// ============================================================
+// STATE MANAGEMENT
+// ============================================================
+
+let state = {};  // { itemId: { checked: bool, by: string, at: timestamp } }
+let currentItemId = null;
+let isOnline = false;
+
+const hasConfig = CONFIG.BIN_ID && CONFIG.API_KEY;
+
+// Namen im Browser merken
+function getSavedName() {
+  try { return localStorage.getItem('wishlist_name') || ''; } catch(e) { return ''; }
+}
+function saveName(name) {
+  try { localStorage.setItem('wishlist_name', name); } catch(e) {}
+}
+
+// ============================================================
+// JSONBIN.IO API
+// ============================================================
+
+async function loadState() {
+  const btn = document.getElementById('refresh-btn');
+  btn.disabled = true;
+  btn.textContent = '↻ Lade…';
+
+  if (!hasConfig) {
+    document.getElementById('setup-warning').style.display = 'block';
+    setStatus('offline', 'Offline-Modus (nur lokal)');
+    try {
+      const local = localStorage.getItem('wishlist_state');
+      state = local ? JSON.parse(local) : {};
+    } catch(e) { state = {}; }
+    render();
+    btn.disabled = false;
+    btn.textContent = '↻ Aktualisieren';
+    return;
+  }
+
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}/latest`, {
+      headers: { 'X-Master-Key': CONFIG.API_KEY }
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const data = await res.json();
+    state = data.record || {};
+    isOnline = true;
+    setStatus('connected', 'Live synchronisiert');
+  } catch (err) {
+    console.error('Load error:', err);
+    setStatus('error', 'Verbindung fehlgeschlagen');
+    showToast('Konnte Liste nicht laden. Prüfe deine Internetverbindung.');
+  } finally {
+    render();
+    btn.disabled = false;
+    btn.textContent = '↻ Aktualisieren';
+  }
+}
+
+async function saveState() {
+  if (!hasConfig) {
+    try { localStorage.setItem('wishlist_state', JSON.stringify(state)); } catch(e) {}
+    return true;
+  }
+
+  try {
+    const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}`, {
+      method: 'PUT',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-Master-Key': CONFIG.API_KEY
+      },
+      body: JSON.stringify(state)
+    });
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    return true;
+  } catch (err) {
+    console.error('Save error:', err);
+    showToast('Speichern fehlgeschlagen. Bitte noch einmal versuchen.');
+    return false;
+  }
+}
+
+// ============================================================
+// UI
+// ============================================================
+
+function setStatus(type, label) {
+  const dot = document.getElementById('status-dot');
+  dot.className = 'status-dot ' + (type === 'connected' ? 'connected' : type === 'error' ? 'error' : '');
+  document.getElementById('status-label').textContent = label;
+}
+
+function render() {
+  const container = document.getElementById('list-container');
+  let html = '';
+  let total = 0, done = 0;
+
+  WISHLIST.forEach((section, idx) => {
+    const num = String(idx + 1).padStart(2, '0');
+    html += `<div class="section">
+      <div class="section-header">
+        <span class="section-number">§ ${num}</span>
+        <h2>${section.title}</h2>
+        <span class="section-price">${section.price}</span>
+      </div>`;
+
+    section.items.forEach(item => {
+      total++;
+      const st = state[item.id] || {};
+      const checked = !!st.checked;
+      if (checked) done++;
+
+      const titleHtml = item.url
+        ? `<a href="${item.url}" target="_blank" rel="noopener">${item.name}</a>`
+        : item.name;
+
+      const metaParts = [`<span class="item-price">${item.price}</span>`];
+      if (item.note) metaParts.push(`<span class="item-note">${item.note}</span>`);
+
+      html += `<div class="item ${checked ? 'done' : ''}">
+        <div class="item-check">
+          <input type="checkbox" class="checkbox" id="cb-${item.id}" ${checked ? 'checked' : ''}
+                 onchange="handleToggle('${item.id}', this)">
+        </div>
+        <div class="item-body">
+          <div class="item-title">${titleHtml}</div>
+          <div class="item-meta">${metaParts.join('')}</div>
+          ${checked && st.by ? `<div class="claimed-by">Besorgt von ${escapeHtml(st.by)}</div>` : ''}
+        </div>
+      </div>`;
+    });
+
+    html += `</div>`;
+  });
+
+  container.innerHTML = html;
+
+  // Progress
+  const pct = total > 0 ? (done / total) * 100 : 0;
+  document.getElementById('progress-fill').style.width = pct + '%';
+  document.getElementById('progress-text').textContent = `${done} / ${total} besorgt`;
+}
+
+function escapeHtml(s) {
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+// ============================================================
+// Checkbox Handler
+// ============================================================
+
+function handleToggle(itemId, checkbox) {
+  if (checkbox.checked) {
+    // Öffne Modal zur Namensabfrage
+    currentItemId = itemId;
+    checkbox.checked = false;  // revert until confirmed
+    openModal();
+  } else {
+    // Uncheck: wer war das?
+    const entry = state[itemId];
+    const currentName = getSavedName();
+    if (entry && entry.by && currentName && entry.by !== currentName) {
+      if (!confirm(`Dieses Geschenk wurde von "${entry.by}" markiert. Trotzdem abwählen?`)) {
+        checkbox.checked = true;
+        return;
+      }
+    }
+    delete state[itemId];
+    persistAndRender();
+  }
+}
+
+async function persistAndRender() {
+  render();
+  await saveState();
+}
+
+function openModal() {
+  const modal = document.getElementById('modal');
+  const input = document.getElementById('name-input');
+  input.value = getSavedName();
+  modal.classList.add('active');
+  setTimeout(() => input.focus(), 100);
+}
+
+function closeModal() {
+  document.getElementById('modal').classList.remove('active');
+  currentItemId = null;
+}
+
+async function confirmClaim() {
+  const input = document.getElementById('name-input');
+  const name = input.value.trim();
+  if (!name) {
+    input.focus();
+    return;
+  }
+  saveName(name);
+
+  // Re-fetch to avoid races — nur wenn online
+  if (hasConfig) {
+    try {
+      const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}/latest`, {
+        headers: { 'X-Master-Key': CONFIG.API_KEY }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        state = data.record || {};
+      }
+    } catch(e) { /* offline fall-through */ }
+
+    // Check if already claimed in the meantime
+    if (state[currentItemId] && state[currentItemId].checked) {
+      showToast(`Zu spät — "${state[currentItemId].by}" war schneller!`);
+      closeModal();
+      render();
+      return;
+    }
+  }
+
+  state[currentItemId] = {
+    checked: true,
+    by: name,
+    at: Date.now()
+  };
+  const ok = await saveState();
+  closeModal();
+  render();
+  if (ok) showToast('Danke, ' + name + '! 💛');
+}
+
+// Enter in Modal
+document.getElementById('name-input').addEventListener('keydown', e => {
+  if (e.key === 'Enter') confirmClaim();
+  if (e.key === 'Escape') closeModal();
+});
+
+// Close modal on backdrop click
+document.getElementById('modal').addEventListener('click', e => {
+  if (e.target.id === 'modal') closeModal();
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 3500);
+}
+
+// Auto-refresh every 60 seconds when online
+setInterval(() => {
+  if (hasConfig && !document.hidden) loadState();
+}, 60000);
+
+// Refresh when tab becomes visible
+document.addEventListener('visibilitychange', () => {
+  if (!document.hidden && hasConfig) loadState();
+});
+
+// Initial load
+loadState();
+</script>
+
+</body>
+</html>
