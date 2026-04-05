@@ -36,13 +36,29 @@ img {
     max-height: 120px;
 }
 
+.content img.pfp {
+    width: 100%;
+    max-height: none;
+    height: auto;
+    display: block;
+}
+
 /* Center the entire body content */
 .content {
-    width: 100%; /* Makes it responsive */
-    max-width: var(--content-max-width); /* Set exact width using variable */
-    margin: 0 auto; /* Center horizontally */
-    padding: 10px; /* Optional spacing inside the content area */
-    display: flex;
+    width: 100%;
+    max-width: var(--content-max-width);
+    margin: 0 auto;
+}
+
+.content main {
+    width: 100%;
+    padding: 0 40px;
+    box-sizing: border-box;
+}
+
+.bio {
+    margin-top: 2em;
+    margin-bottom: 4em;
 }
 
 /* ===========================
