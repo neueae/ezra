@@ -277,6 +277,26 @@
   }
   .checkbox:disabled { cursor:not-allowed; opacity:0.5; }
 
+  .item.saving .checkbox {
+    opacity: 0;
+  }
+  .item.saving .item-check {
+    position: relative;
+  }
+  .item.saving .item-check::after {
+    content: '';
+    position: absolute;
+    top: 4px; left: 0;
+    width: 18px; height: 18px;
+    border: 2px solid var(--line);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.6s linear infinite;
+  }
+  @keyframes spin {
+    to { transform: rotate(360deg); }
+  }
+
   .item-body { flex:1; min-width:0; }
 
   .item-title {
@@ -433,7 +453,7 @@
     <div class="kicker">Wunschliste · 2026</div>
     <h1>Unser kleines<br><em>großes Abenteuer</em></h1>
     <p class="intro">
-      Vielen Dank, dass ihr uns begleiten möchtet! Hier findet ihr alles, was wir noch brauchen — setzt einfach einen Haken bei dem, was ihr besorgen wollt, damit nichts doppelt kommt.
+      Vielen Dank, dass ihr uns begleiten möchtet! Hier findet ihr alles, was wir noch brauchen — setzt einfach einen Haken bei dem, was ihr schenken wollt, damit nichts doppelt besorgt wird.
     </p>
   </header>
 
@@ -499,7 +519,7 @@ const WISHLIST = [
           { id: 'b03', name: 'Mitwachs-Leggings (0–1 Jahr)', price: 'ca. 50 €', note: 'Lil Leo, dunkelgrün, 100 % Merinowolle', url: 'https://lil-leo.de/products/leggings-in-dunkelgrun-aus-100-merinowolle' },
           { id: 'b04', name: 'Joha Schlafanzug 56/62 — blau', price: 'ca. 32 €', note: 'Merino Wolle, 2in1 mit Füßen', url: 'https://www.papiton.de/joha-schlafanzug-schlafoverall-2in1-fuesse-merino-wolle-basic-blau-56140-122-1356140.htm' },
           { id: 'b05', name: 'Joha Schlafanzug 56/62 — sesam', price: 'ca. 32 €', note: 'Merino Wolle, 2in1 mit Füßen', url: 'https://www.papiton.de/joha-schlafanzug-schlafoverall-2in1-merino-wolle-basic-sesam-56140-122-1558756140.htm' },
-          { id: 'b06', name: 'Hachimin Eimer 20 L', price: 'ca. 50 €', note: 'Pale Pink' },
+          { id: 'b06', name: 'Hachiman Eimer 20 L', price: 'ca. 50 €', note: 'Pale Pink', url: 'https://www.culinaris.de/Hachiman-Eimer-20-L-Omnioutil-LL-Pale-Pink/59707' },
           { id: 'b07', name: 'Beistellbett babybay Original 81×43 cm', price: '100–200 €', note: 'Natur unbehandelt, mit Rollen + Haken. Gern gebraucht — Matratze & 2 Spannbettlaken bitte neu', url: 'https://www.baby-walz.de/p/babybay-beistellbett-original-81x43-cm-natur-unbehandelt-1396706/' },
           { id: 'b08', name: 'Einschlagdecke Auto — Piqué Bio-Baumwolle', price: 'ca. 70 €', note: 'hessnatur (20 % Gutschein beachten!)', url: 'https://www.hessnatur.com/de/pique-einschlagdecke-aus-reiner-bio-baumwolle/p/5780896ONE' },
           { id: 'b09', name: 'Bugaboo Fox 5 PureBreeze Matratze', price: 'ca. 56 €', note: 'Kinderwagen-Matratze', url: 'https://www.bugaboo.com/de-de/teile/bugaboo-fox-5-renew-purebreeze-matratze-100341MI.html' },
@@ -668,9 +688,13 @@ function render() {
           ? `<a class="item-link" href="${esc(item.url)}" target="_blank" rel="noopener">Zum Produkt <span>→</span></a>`
           : '';
 
-        html += `<div class="item ${checked ? 'done' : ''}">
+        const isSaving = saving.has(item.id);
+        const anyBusy = saving.size > 0;
+        const classes = [checked ? 'done' : '', isSaving ? 'saving' : ''].filter(Boolean).join(' ');
+
+        html += `<div class="item ${classes}">
           <div class="item-check">
-            <input type="checkbox" class="checkbox" ${checked ? 'checked' : ''}
+            <input type="checkbox" class="checkbox" ${checked ? 'checked' : ''} ${anyBusy ? 'disabled' : ''}
                    onchange="handleToggle('${item.id}', this.checked)">
           </div>
           <div class="item-body">
@@ -701,9 +725,14 @@ function esc(s) {
 // Toggle
 // ============================================================
 
+let saving = new Set();
+
 async function handleToggle(id, checked) {
+  if (saving.size > 0) return;
+  saving.add(id);
+  render();
+
   if (checked) {
-    // Re-fetch to check for races
     if (hasConfig) {
       try {
         const res = await fetch(`https://api.jsonbin.io/v3/b/${CONFIG.BIN_ID}/latest`, {
@@ -716,6 +745,7 @@ async function handleToggle(id, checked) {
       } catch(e) {}
 
       if (state[id]) {
+        saving.delete(id);
         showToast('Jemand war schneller — schon erledigt!');
         render();
         return;
@@ -725,9 +755,11 @@ async function handleToggle(id, checked) {
   } else {
     delete state[id];
   }
-  render();
+
   const ok = await saveState();
-  if (ok && checked) showToast('Danke! 💛');
+  saving.delete(id);
+  render();
+  if (ok && checked) showToast('Gespeichert! 💛');
 }
 
 function showToast(msg) {
